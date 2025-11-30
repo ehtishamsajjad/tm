@@ -1,6 +1,6 @@
-import { ReactNode } from "react";
-import { GalleryVerticalEnd } from "lucide-react";
 import { Link } from "@tanstack/react-router";
+import { ListTodo } from "lucide-react";
+import { ReactNode } from "react";
 
 interface AuthLayoutProps {
   children: ReactNode;
@@ -12,8 +12,8 @@ export function AuthLayout({ children }: AuthLayoutProps) {
       <div className="flex flex-col gap-4 p-6 md:p-10">
         <div className="flex justify-center gap-2 md:justify-start">
           <Link to="/" className="flex items-center gap-2 font-medium">
-            <div className="bg-primary text-primary-foreground flex size-6 items-center justify-center rounded-md">
-              <GalleryVerticalEnd className="size-4" />
+            <div className="bg-blue-500 text-primary-foreground flex size-6 items-center justify-center rounded-md">
+              <ListTodo className="size-4" />
             </div>
             Task Manager Inc.
           </Link>
