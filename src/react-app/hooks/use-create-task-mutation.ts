@@ -7,6 +7,9 @@ import z from "zod";
 export const createTaskSchema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().optional(),
+  priority: z.enum(["low", "medium", "high"]).optional(),
+  deadline: z.date().optional(),
+  tags: z.array(z.string()).optional(),
 });
 
 export type CreateTaskForm = z.infer<typeof createTaskSchema>;

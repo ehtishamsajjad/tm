@@ -1,4 +1,4 @@
-import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
+import { Area, AreaChart, CartesianGrid, XAxis, YAxis, Legend } from "recharts";
 
 import {
   Card,
@@ -33,13 +33,17 @@ const chartConfig = {
   tasks: {
     label: "Tasks",
   },
-  desktop: {
+  total: {
     label: "Total Tasks",
-    color: "var(--primary)",
+    color: "hsl(217, 91%, 60%)",
   },
-  mobile: {
+  active: {
     label: "Active Tasks",
-    color: "var(--primary)",
+    color: "hsl(142, 76%, 36%)",
+  },
+  completed: {
+    label: "Completed Tasks",
+    color: "hsl(162, 72%, 50%)",
   },
 } satisfies ChartConfig;
 
@@ -50,21 +54,25 @@ export function ChartAreaInteractive() {
 
   const chartData = useMemo(() => {
     if (!data) return [];
-    const dateMap = new Map<string, { total: number; active: number }>();
+    const dateMap = new Map<string, { total: number; active: number; completed: number }>();
     data.tasks.forEach((task) => {
       const date = new Date(task.createdAt).toISOString().split("T")[0];
-      const current = dateMap.get(date) || { total: 0, active: 0 };
+      const current = dateMap.get(date) || { total: 0, active: 0, completed: 0 };
       current.total += 1;
       if (task.status === "in_progress") {
         current.active += 1;
+      }
+      if (task.status === "completed") {
+        current.completed += 1;
       }
       dateMap.set(date, current);
     });
     return Array.from(dateMap.entries())
       .map(([date, counts]) => ({
         date,
-        desktop: counts.total,
-        mobile: counts.active,
+        total: counts.total,
+        active: counts.active,
+        completed: counts.completed,
       }))
       .sort((a, b) => a.date.localeCompare(b.date));
   }, [data]);
@@ -96,7 +104,7 @@ export function ChartAreaInteractive() {
           <CardTitle>Task Activity</CardTitle>
           <CardDescription>
             <span className="hidden @[540px]/card:block">
-              Tasks created and active over time
+              Tasks created, active, and completed over time
             </span>
             <span className="@[540px]/card:hidden">Task activity</span>
           </CardDescription>
@@ -135,7 +143,7 @@ export function ChartAreaInteractive() {
           </CardAction>
         </CardHeader>
         <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
-          <Skeleton className="aspect-auto h-[250px] w-full" />
+          <Skeleton className="aspect-auto h-[300px] w-full" />
         </CardContent>
       </Card>
     );
@@ -151,7 +159,7 @@ export function ChartAreaInteractive() {
         <CardTitle>Task Activity</CardTitle>
         <CardDescription>
           <span className="hidden @[540px]/card:block">
-            Tasks created and active over time
+            Tasks created, active, and completed over time
           </span>
           <span className="@[540px]/card:hidden">Task activity</span>
         </CardDescription>
@@ -192,42 +200,55 @@ export function ChartAreaInteractive() {
       <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
         <ChartContainer
           config={chartConfig}
-          className="aspect-auto h-[250px] w-full"
+          className="aspect-auto h-[300px] w-full"
         >
-          <AreaChart data={filteredData}>
+          <AreaChart data={filteredData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
             <defs>
-              <linearGradient id="fillDesktop" x1="0" y1="0" x2="0" y2="1">
+              <linearGradient id="fillTotal" x1="0" y1="0" x2="0" y2="1">
                 <stop
                   offset="5%"
-                  stopColor="var(--color-desktop)"
-                  stopOpacity={1.0}
-                />
-                <stop
-                  offset="95%"
-                  stopColor="var(--color-desktop)"
-                  stopOpacity={0.1}
-                />
-              </linearGradient>
-              <linearGradient id="fillMobile" x1="0" y1="0" x2="0" y2="1">
-                <stop
-                  offset="5%"
-                  stopColor="var(--color-mobile)"
+                  stopColor="hsl(217, 91%, 60%)"
                   stopOpacity={0.8}
                 />
                 <stop
                   offset="95%"
-                  stopColor="var(--color-mobile)"
+                  stopColor="hsl(217, 91%, 60%)"
+                  stopOpacity={0.1}
+                />
+              </linearGradient>
+              <linearGradient id="fillActive" x1="0" y1="0" x2="0" y2="1">
+                <stop
+                  offset="5%"
+                  stopColor="hsl(142, 76%, 36%)"
+                  stopOpacity={0.8}
+                />
+                <stop
+                  offset="95%"
+                  stopColor="hsl(142, 76%, 36%)"
+                  stopOpacity={0.1}
+                />
+              </linearGradient>
+              <linearGradient id="fillCompleted" x1="0" y1="0" x2="0" y2="1">
+                <stop
+                  offset="5%"
+                  stopColor="hsl(162, 72%, 50%)"
+                  stopOpacity={0.8}
+                />
+                <stop
+                  offset="95%"
+                  stopColor="hsl(162, 72%, 50%)"
                   stopOpacity={0.1}
                 />
               </linearGradient>
             </defs>
-            <CartesianGrid vertical={false} />
+            <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="hsl(210, 40%, 90%)" />
             <XAxis
               dataKey="date"
               tickLine={false}
               axisLine={false}
               tickMargin={8}
               minTickGap={32}
+              stroke="hsl(210, 40%, 96%)"
               tickFormatter={(value) => {
                 const date = new Date(value);
                 return date.toLocaleDateString("en-US", {
@@ -236,33 +257,54 @@ export function ChartAreaInteractive() {
                 });
               }}
             />
+            <YAxis
+              stroke="hsl(210, 40%, 96%)"
+              tickLine={false}
+              axisLine={false}
+            />
             <ChartTooltip
-              cursor={false}
+              cursor={{ fill: "rgba(0, 0, 0, 0.05)" }}
               content={
                 <ChartTooltipContent
                   labelFormatter={(value) => {
                     return new Date(value).toLocaleDateString("en-US", {
                       month: "short",
                       day: "numeric",
+                      year: "numeric",
                     });
                   }}
                   indicator="dot"
                 />
               }
             />
-            <Area
-              dataKey="mobile"
-              type="natural"
-              fill="url(#fillMobile)"
-              stroke="var(--color-mobile)"
-              stackId="a"
+            <Legend
+              verticalAlign="top"
+              height={36}
+              wrapperStyle={{ paddingBottom: "16px" }}
             />
             <Area
-              dataKey="desktop"
+              dataKey="total"
               type="natural"
-              fill="url(#fillDesktop)"
-              stroke="var(--color-desktop)"
-              stackId="a"
+              fill="url(#fillTotal)"
+              stroke="hsl(217, 91%, 60%)"
+              strokeWidth={2}
+              name="Total Tasks"
+            />
+            <Area
+              dataKey="active"
+              type="natural"
+              fill="url(#fillActive)"
+              stroke="hsl(142, 76%, 36%)"
+              strokeWidth={2}
+              name="Active Tasks"
+            />
+            <Area
+              dataKey="completed"
+              type="natural"
+              fill="url(#fillCompleted)"
+              stroke="hsl(162, 72%, 50%)"
+              strokeWidth={2}
+              name="Completed Tasks"
             />
           </AreaChart>
         </ChartContainer>

@@ -9,6 +9,15 @@ const taskSchema = z.object({
   title: z.string(),
   description: z.string(),
   status: z.enum(["todo", "in_progress", "completed"]),
+  priority: z.enum(["low", "medium", "high"]),
+  deadline: z.string().nullable().optional(),
+  tags: z.array(
+    z.object({
+      id: z.string(),
+      name: z.string(),
+      color: z.string(),
+    })
+  ).optional(),
   createdAt: z.string(),
 });
 

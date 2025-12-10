@@ -68,11 +68,11 @@ function LandingPage() {
             <div className="mb-6 inline-flex items-center gap-2 rounded-full border bg-background px-4 py-1.5 text-sm">
               <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
               <span className="text-muted-foreground">
-                Trusted by 10,000+ teams worldwide
+                Trusted by 20,000+ teams worldwide
               </span>
             </div>
             <h1 className="mx-auto max-w-4xl text-4xl font-bold tracking-tight sm:text-6xl lg:text-7xl">
-              Manage tasks with{" "}
+              Manage Your tasks with{" "}
               <span className="bg-linear-to-r from-primary via-chart-1 to-chart-2 bg-clip-text text-transparent">
                 clarity and ease
               </span>

@@ -1,16 +1,15 @@
-# Task Manager (TM)
+# Task Manager Capstone Project - Full Stack Application Built with React, Hono, and Cloudflare Workers
 
 A full-stack Task Manager application built as part of the **Advanced Full Stack Development & Software Testing** course. This project demonstrates modern web development practices using React, Hono, and Cloudflare Workers.
 
-🌐 **Live Demo:** [https://tm.ehtishamsajjad.com/](https://tm.ehtishamsajjad.com/)
-
-📚 **Course Documentation:** [AFST Course](https://github.com/ehtishamsajjad/afst)
+🌐 **Live Demo:** [https://tm.salarhussain.workers.dev/](https://https://tm.salarhussain.workers.dev//)
 
 ## ✨ Features
 
 - 📝 **Task Management** - Create, read, update, and delete tasks
 - 🔐 **User Authentication** - Secure login/signup with Better Auth
-- 📊 **Status Tracking** - Track tasks with statuses (todo, in-progress, done)
+- 📊 **Kanban Board** - Visualize and manage workflow with a drag-and-drop board
+- 🔥 **Task Priority** - Organize tasks by priority (Low, Medium, High)
 - 🎯 **Drag & Drop** - Reorder tasks with intuitive drag-and-drop
 - 🌙 **Dark Mode** - Built-in theme support
 - ⚡ **Edge Deployment** - Runs on Cloudflare Workers globally
@@ -52,7 +51,7 @@ A full-stack Task Manager application built as part of the **Advanced Full Stack
 
 ```bash
 # Clone the repository
-git clone https://github.com/ehtishamsajjad/tm.git
+git clone https://github.com/HuSyN01/tm.git
 cd tm
 
 # Install dependencies
@@ -114,7 +113,7 @@ This project is licensed under the Apache Version 2 License - see the [LICENSE](
 
 ## 👨‍💻 Author
 
-**Ehtisham Sajjad** - Senior Software Engineer
+**Salar Hussain** - Senior Full Stack Developer
 
-- LinkedIn: [@ehtishamsajjad](https://www.linkedin.com/in/ehtishamsajjad/)
-- Email: [hi@ehtishamsajjad.com](mailto:hi@ehtishamsajjad.com)
+- LinkedIn: [@salaarhusyn](https://www.linkedin.com/in/salaarhusyn/)
+- Email: [info@heysalar.me](mailto:info@heysalar.me)

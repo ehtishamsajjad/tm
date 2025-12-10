@@ -1,6 +1,7 @@
 import { AppSidebar } from "@/components/app-sidebar";
 import { ChartAreaInteractive } from "@/components/chart-area-interactive";
 import { DataTable } from "@/components/data-table";
+import { KanbanBoard } from "@/components/kanban-board";
 import { SectionCards } from "@/components/section-cards";
 import { SiteHeader } from "@/components/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
@@ -31,6 +32,10 @@ function RouteComponent() {
                 <ChartAreaInteractive />
               </div>
               <DataTable />
+              <div className="px-4 lg:px-6">
+                <h2 className="text-lg font-semibold mb-4">Kanban Board</h2>
+                <KanbanBoard />
+              </div>
             </div>
           </div>
         </div>

@@ -1,4 +1,5 @@
-import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { relations } from "drizzle-orm";
+import { integer, sqliteTable, text, primaryKey } from "drizzle-orm/sqlite-core";
 
 export const user = sqliteTable("user", {
   id: text("id").primaryKey(),
@@ -57,14 +58,64 @@ export const verification = sqliteTable("verification", {
 export const taskStatusEnum = ["todo", "in_progress", "completed"] as const;
 export type TaskStatus = (typeof taskStatusEnum)[number];
 
+export const priorityEnum = ["low", "medium", "high"] as const;
+export type Priority = (typeof priorityEnum)[number];
+
 export const task = sqliteTable("task", {
   id: text("id").primaryKey(),
   title: text("title").notNull(),
   description: text("description"),
   status: text("status", { enum: taskStatusEnum }).notNull().default("todo"),
+  priority: text("priority", { enum: priorityEnum }).notNull().default("medium"),
+  deadline: integer("deadline", { mode: "timestamp" }),
   userId: text("user_id")
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
   createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
   updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),
 });
+
+export const tag = sqliteTable("tag", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  color: text("color").notNull(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
+  updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),
+});
+
+export const taskTag = sqliteTable(
+  "task_tag",
+  {
+    taskId: text("task_id")
+      .notNull()
+      .references(() => task.id, { onDelete: "cascade" }),
+    tagId: text("tag_id")
+      .notNull()
+      .references(() => tag.id, { onDelete: "cascade" }),
+  },
+  (t) => ({
+    pk: primaryKey({ columns: [t.taskId, t.tagId] }),
+  })
+);
+
+export const taskRelations = relations(task, ({ many }) => ({
+  tags: many(taskTag),
+}));
+
+export const tagRelations = relations(tag, ({ many }) => ({
+  tasks: many(taskTag),
+}));
+
+export const taskTagRelations = relations(taskTag, ({ one }) => ({
+  task: one(task, {
+    fields: [taskTag.taskId],
+    references: [task.id],
+  }),
+  tag: one(tag, {
+    fields: [taskTag.tagId],
+    references: [tag.id],
+  }),
+}));

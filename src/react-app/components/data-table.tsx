@@ -26,6 +26,10 @@ import { z } from "zod";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { DataTableColumnHeader } from "@/components/ui/data-table-column-header";
+import { DatePicker } from "@/components/date-picker";
+import { formatDate } from "@/lib/utils";
+import { X } from "lucide-react";
 import {
   Drawer,
   DrawerClose,
@@ -74,6 +78,15 @@ export const taskSchema = z.object({
   title: z.string(),
   description: z.string(),
   status: z.enum(["todo", "in_progress", "completed"]),
+  priority: z.enum(["low", "medium", "high"]),
+  deadline: z.string().nullable().optional(),
+  tags: z.array(
+    z.object({
+      id: z.string(),
+      name: z.string(),
+      color: z.string(),
+    })
+  ).optional(),
   createdAt: z.string(),
 });
 
@@ -100,13 +113,7 @@ function getStatusDisplay(status: Task["status"]) {
   }
 }
 
-function formatDate(dateString: string) {
-  return new Date(dateString).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
-}
+
 
 function TaskCellViewer({ task }: { task: Task }) {
   const isMobile = useIsMobile();
@@ -114,6 +121,13 @@ function TaskCellViewer({ task }: { task: Task }) {
   const [title, setTitle] = useState(task.title);
   const [description, setDescription] = useState(task.description);
   const [status, setStatus] = useState(task.status);
+  const [deadline, setDeadline] = useState<Date | undefined>(
+    task.deadline ? new Date(task.deadline) : undefined
+  );
+  const [tags, setTags] = useState<string[]>(
+    task.tags?.map((t) => t.name) || []
+  );
+  const [tagInput, setTagInput] = useState("");
   const [open, setOpen] = useState(false);
 
   const handleSubmit = (e: FormEvent) => {
@@ -125,6 +139,8 @@ function TaskCellViewer({ task }: { task: Task }) {
           title,
           description,
           status,
+          deadline,
+          tags,
         })
         .then(() => setOpen(false)),
       {
@@ -133,6 +149,23 @@ function TaskCellViewer({ task }: { task: Task }) {
         error: "Failed to update task",
       }
     );
+  };
+
+  const handleAddTag = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      const tag = tagInput.trim();
+      if (tag) {
+        if (!tags.includes(tag)) {
+          setTags([...tags, tag]);
+        }
+        setTagInput("");
+      }
+    }
+  };
+
+  const removeTag = (tagToRemove: string) => {
+    setTags(tags.filter((tag) => tag !== tagToRemove));
   };
 
   return (
@@ -189,6 +222,33 @@ function TaskCellViewer({ task }: { task: Task }) {
               </Select>
             </div>
             <div className="flex flex-col gap-3">
+              <Label>Deadline</Label>
+              <DatePicker date={deadline} setDate={setDeadline} />
+            </div>
+            <div className="flex flex-col gap-3">
+              <Label>Tags</Label>
+              <Input
+                value={tagInput}
+                onChange={(e) => setTagInput(e.target.value)}
+                onKeyDown={handleAddTag}
+                placeholder="Type tag and press Enter"
+              />
+              <div className="flex flex-wrap gap-2">
+                {tags.map((tag) => (
+                  <Badge key={tag} variant="secondary" className="gap-1">
+                    {tag}
+                    <button
+                      type="button"
+                      onClick={() => removeTag(tag)}
+                      className="hover:text-destructive"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </Badge>
+                ))}
+              </div>
+            </div>
+            <div className="flex flex-col gap-3">
               <Label>Created At</Label>
               <div className="text-muted-foreground">
                 {formatDate(task.createdAt)}
@@ -216,6 +276,13 @@ function ActionsCell({ task }: { task: Task }) {
   const [title, setTitle] = useState(task.title);
   const [description, setDescription] = useState(task.description);
   const [status, setStatus] = useState(task.status);
+  const [deadline, setDeadline] = useState<Date | undefined>(
+    task.deadline ? new Date(task.deadline) : undefined
+  );
+  const [tags, setTags] = useState<string[]>(
+    task.tags?.map((t) => t.name) || []
+  );
+  const [tagInput, setTagInput] = useState("");
   const [open, setOpen] = useState(false);
 
   const handleDelete = () => {
@@ -235,6 +302,8 @@ function ActionsCell({ task }: { task: Task }) {
           title,
           description,
           status,
+          deadline,
+          tags,
         })
         .then(() => setOpen(false)),
       {
@@ -243,6 +312,23 @@ function ActionsCell({ task }: { task: Task }) {
         error: "Failed to update task",
       }
     );
+  };
+
+  const handleAddTag = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      const tag = tagInput.trim();
+      if (tag) {
+        if (!tags.includes(tag)) {
+          setTags([...tags, tag]);
+        }
+        setTagInput("");
+      }
+    }
+  };
+
+  const removeTag = (tagToRemove: string) => {
+    setTags(tags.filter((tag) => tag !== tagToRemove));
   };
 
   return (
@@ -321,6 +407,33 @@ function ActionsCell({ task }: { task: Task }) {
               </Select>
             </div>
             <div className="flex flex-col gap-3">
+              <Label>Deadline</Label>
+              <DatePicker date={deadline} setDate={setDeadline} />
+            </div>
+            <div className="flex flex-col gap-3">
+              <Label>Tags</Label>
+              <Input
+                value={tagInput}
+                onChange={(e) => setTagInput(e.target.value)}
+                onKeyDown={handleAddTag}
+                placeholder="Type tag and press Enter"
+              />
+              <div className="flex flex-wrap gap-2">
+                {tags.map((tag) => (
+                  <Badge key={tag} variant="secondary" className="gap-1">
+                    {tag}
+                    <button
+                      type="button"
+                      onClick={() => removeTag(tag)}
+                      className="hover:text-destructive"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </Badge>
+                ))}
+              </div>
+            </div>
+            <div className="flex flex-col gap-3">
               <Label>Created At</Label>
               <div className="text-muted-foreground">
                 {formatDate(task.createdAt)}
@@ -391,6 +504,66 @@ const columns: ColumnDef<Task>[] = [
         {row.original.description || "No description"}
       </div>
     ),
+  },
+  {
+    accessorKey: "priority",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Priority" />
+    ),
+    cell: ({ row }) => {
+      const priority = row.getValue("priority") as string;
+      const colors = {
+        high: "text-red-500 bg-red-100 dark:bg-red-900/20",
+        medium: "text-yellow-500 bg-yellow-100 dark:bg-yellow-900/20",
+        low: "text-green-500 bg-green-100 dark:bg-green-900/20",
+      };
+      const colorClass = colors[priority as keyof typeof colors] || "";
+
+      return (
+        <div className={`flex w-[80px] items-center justify-center rounded-full px-2 py-1 text-xs font-medium ${colorClass}`}>
+          <span className="capitalize">{priority}</span>
+        </div>
+      );
+    },
+    filterFn: (row, id, value) => {
+      return value.includes(row.getValue(id));
+    },
+  },
+  {
+    accessorKey: "deadline",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Deadline" />
+    ),
+    cell: ({ row }) => {
+      const deadline = row.original.deadline;
+      console.log("Task row data:", row.original);
+      if (!deadline) return <div className="text-muted-foreground">-</div>;
+      return (
+        <div className="text-muted-foreground">
+          {formatDate(deadline)}
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "tags",
+    header: "Tags",
+    cell: ({ row }) => {
+      const tags = row.original.tags || [];
+      return (
+        <div className="flex flex-wrap gap-1">
+          {tags.map((tag) => (
+            <Badge key={tag.id} variant="outline" className="text-xs">
+              {tag.name}
+            </Badge>
+          ))}
+        </div>
+      );
+    },
+    filterFn: (row, _id, value) => {
+      const tags = row.original.tags || [];
+      return value.some((val: string) => tags.some((tag) => tag.name === val));
+    },
   },
   {
     accessorKey: "status",
@@ -549,9 +722,9 @@ export function DataTable() {
                         {header.isPlaceholder
                           ? null
                           : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext()
-                            )}
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
                       </TableHead>
                     );
                   })}

@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { type Icon } from "@tabler/icons-react"
+import { IconMoon, IconSun } from "@tabler/icons-react"
 
 import {
   SidebarGroup,
@@ -21,6 +22,26 @@ export function NavSecondary({
     icon: Icon
   }[]
 } & React.ComponentPropsWithoutRef<typeof SidebarGroup>) {
+  const [theme, setTheme] = React.useState("light")
+
+  React.useEffect(() => {
+    // Load stored theme on mount
+    const stored = localStorage.getItem("theme")
+    if (stored) {
+      setTheme(stored)
+      document.documentElement.classList.toggle("dark", stored === "dark")
+    }
+  }, [])
+
+  const toggleTheme = () => {
+    const newTheme = theme === "light" ? "dark" : "light"
+    setTheme(newTheme)
+    localStorage.setItem("theme", newTheme)
+
+    // toggle the class on <html>
+    document.documentElement.classList.toggle("dark", newTheme === "dark")
+  }
+
   return (
     <SidebarGroup {...props}>
       <SidebarGroupContent>
@@ -35,6 +56,14 @@ export function NavSecondary({
               </SidebarMenuButton>
             </SidebarMenuItem>
           ))}
+
+          {/* 🌙 Theme Toggle Button */}
+          <SidebarMenuItem>
+            <SidebarMenuButton onClick={toggleTheme}>
+              {theme === "light" ? <IconMoon /> : <IconSun />}
+              <span>{theme === "light" ? "Dark Mode" : "Light Mode"}</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
         </SidebarMenu>
       </SidebarGroupContent>
     </SidebarGroup>

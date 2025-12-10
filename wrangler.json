@@ -12,8 +12,8 @@
 	"d1_databases": [
 		{
 			"binding": "DB",
-			"database_name": "tm-d1",
-			"database_id": "0122c898-3541-43a8-8bd2-52a2e0081acc",
+			"database_name": "task-manager",
+			"database_id": "dd2f1548-2a5b-416d-bcf8-2a0489da7bc1",
 			"migrations_dir": "drizzle"
 		}
 	],
